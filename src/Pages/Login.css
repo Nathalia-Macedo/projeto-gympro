@@ -1,0 +1,237 @@
+.LoginForms {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+.conteiner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.logo img {
+    max-width: 200px;
+    margin-bottom: 15px;
+}
+
+.logo span {
+    font-size: 1.2rem;
+    color: #333;
+}
+
+.inputs {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.inputs label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.little{
+    font-size: 12px;
+}
+
+.inputs input {
+    width: 90%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.more {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.prefer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.prefer input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.prefer span {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.juntos {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.juntos a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.finale {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.finale button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.finale button:hover {
+    background-color: #0056b3;
+}
+
+.cadastrar {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.cadastrar p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.cadastrar a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.loginForm{
+    width: 80%;
+}
+
+/* Responsividade para telas pequenas (até 480px) */
+@media (max-width: 480px) {
+    .LoginForms {
+        padding: 10px;
+    }
+
+    .logo img {
+        max-width: 150px;
+    }
+
+    .inputs, .more {
+        max-width: 100%;
+    }
+
+    .inputs input {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+
+    .more {
+        max-width: 300px;
+        margin-top: 20px;
+    }
+
+    .juntos {
+        flex-direction: column; /* Torna a opção "lembrar minha preferência" em coluna em telas pequenas */
+        align-items: flex-start;
+    }
+
+    .prefer {
+        flex-direction: column; /* Coloca o checkbox em coluna também em telas pequenas */
+    }
+
+    .finale button {
+        font-size: 0.9rem;
+    }
+}
+
+/* Responsividade para telas bem pequenas (até 320px) */
+@media (max-width: 320px) {
+    .inputs, .more {
+        max-width: 280px;
+    }
+
+    .logo img {
+        max-width: 120px;
+    }
+
+    .logo span {
+        font-size: 1rem;
+    }
+
+    .inputs input {
+        padding: 8px;
+    }
+
+    .finale button {
+        font-size: 0.9rem;
+    }
+}
+
+/* Responsividade para dispositivos médios (até 768px) */
+@media (max-width: 768px) {
+    .conteiner {
+        max-width: 90%;
+        padding: 20px;
+    }
+
+    .logo img {
+        max-width: 180px;
+    }
+
+    .inputs input {
+        padding: 12px;
+    }
+
+    .prefer {
+        flex-direction: row; /* Para tablets, o checkbox e o texto ficam lado a lado */
+        justify-content: flex-start;
+    }
+
+    .juntos {
+        flex-direction: row; /* Garante que fiquem lado a lado em dispositivos maiores */
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .cadastrar p {
+        font-size: 0.85rem;
+    }
+}
