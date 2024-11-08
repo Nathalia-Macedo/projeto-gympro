@@ -23,40 +23,48 @@ export const DadosProvider = ({ children }) => {
   const login = async (username, password) => {
     console.log(username, password);
     try {
-      const response = await fetch('/login', {
+      const response = await fetch('http://gympro.verkom.com.br:8080/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json', // Adiciona este cabeçalho
+
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password })
       });
-
-      const text = await response.text();  // Usando text() para ver o conteúdo bruto da resposta
-      console.log('Resposta do servidor:', text); // Logando o conteúdo da resposta
-
-      // Verificando se a resposta é ok
+  
+      const text = await response.text();
+      console.log('Resposta do servidor:', text);
+  
       if (!response.ok) {
-        throw new Error('Erro no login');
+        throw new Error(`Erro no login: ${response.status} - ${response.statusText}`);
       }
-
-      // Se houver conteúdo, parse o JSON
-      const data = text ? JSON.parse(text) : null;
+  
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseError) {
+        setErro('Erro ao processar resposta do servidor');
+        return;
+      }
+  
       if (data) {
-        console.log(data);  // Verifique os dados retornados (ex: { token: 'xyz' })
-        
-        // Armazenar o token no localStorage
+        console.log(data);
         localStorage.setItem('token', data.token);
-
-        // Armazenando o usuário no contexto
         setUsuario(data);
-        setErro(null); // Resetando erro
+        setErro(null);
       } else {
         setErro('Resposta vazia do servidor');
       }
     } catch (error) {
-      setErro(error.message || 'Erro na requisição');
+      setErro(
+        error.message.includes('Failed to fetch') 
+        ? 'Erro de conexão com o servidor' 
+        : error.message || 'Erro na requisição'
+      );
     }
   };
+  
 
   const logout = () => {
     setUsuario(null);
