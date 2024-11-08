@@ -15,41 +15,36 @@ export const DadosProvider = ({ children }) => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Se o token existir, você pode buscar o usuário com base no token ou, dependendo da sua aplicação, apenas restaurá-lo
-      setUsuario({ token }); // Aqui você pode adicionar a lógica para buscar mais informações do usuário, se necessário
+      setUsuario({ token });
     }
   }, []);
 
   const login = async (username, password) => {
-    console.log(username, password);
     try {
       const response = await fetch('http://gympro.verkom.com.br:8080/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json', // Adiciona este cabeçalho
-
+          'Accept': 'application/json',
         },
         body: JSON.stringify({ username, password })
       });
-  
+
       const text = await response.text();
-      console.log('Resposta do servidor:', text);
-  
       if (!response.ok) {
         throw new Error(`Erro no login: ${response.status} - ${response.statusText}`);
       }
-  
+
       let data;
       try {
         data = JSON.parse(text);
+        console.log(data)
       } catch (parseError) {
         setErro('Erro ao processar resposta do servidor');
         return;
       }
-  
+
       if (data) {
-        console.log(data);
         localStorage.setItem('token', data.token);
         setUsuario(data);
         setErro(null);
@@ -57,22 +52,52 @@ export const DadosProvider = ({ children }) => {
         setErro('Resposta vazia do servidor');
       }
     } catch (error) {
-      setErro(
-        error.message.includes('Failed to fetch') 
-        ? 'Erro de conexão com o servidor' 
-        : error.message || 'Erro na requisição'
-      );
+      setErro(error.message.includes('Failed to fetch') ? 'Erro de conexão com o servidor' : error.message || 'Erro na requisição');
+    }
+  };
+
+  const register = async (username, password) => {
+    try {
+      console.log(username, password);
+      
+      const response = await fetch('http://gympro.verkom.com.br:8080/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ username, password, role: 'USER' })
+      });
+  
+      // Ignora o erro de CORS e valida apenas pelo status
+      if (response.status === 200) {
+        const data = await response.json();
+        setUsuario(data);
+        setErro(null);
+        localStorage.setItem('token', data.token);
+        console.log("Usuário registrado com sucesso!");
+      } else if (response.status === 403) {
+        setErro("Usuário já está cadastrado.");
+        console.log("Erro: Usuário já está cadastrado.");
+      } else {
+        // Outros erros genéricos
+        throw new Error(`Erro no registro: ${response.status} - ${response.statusText}`);
+      }
+  
+    } catch (error) {
+      // Trata erros de rede ou outros problemas com a requisição
+      setErro(error.message.includes('Failed to fetch') ? 'Erro de conexão com o servidor' : error.message || 'Erro na requisição');
     }
   };
   
 
   const logout = () => {
     setUsuario(null);
-    localStorage.removeItem('token'); // Remover o token do localStorage ao fazer logout
+    localStorage.removeItem('token');
   };
 
   return (
-    <DadosContext.Provider value={{ usuario, login, erro, logout }}>
+    <DadosContext.Provider value={{ usuario, login, register, erro, logout }}>
       {children}
     </DadosContext.Provider>
   );

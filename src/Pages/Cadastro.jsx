@@ -1,6 +1,3 @@
-
-
-
 // import React, { useState } from 'react';
 // import logo from '../Assets/logo-full.png';
 
@@ -49,6 +46,7 @@
 //       padding: '20px',
 //       boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
 //       borderRadius: '8px',
+//       marginBottom: '20px',
 //     },
 //     logo: {
 //       width: '200px',
@@ -77,7 +75,8 @@
 //       fontSize: '16px',
 //       border: '1px solid #ccc',
 //       borderRadius: '4px',
-//       marginBottom: '10px', // Espaço para o placeholder
+//       marginBottom: '10px',
+//       boxSizing: 'border-box',
 //     },
 //     passwordContainer: {
 //       position: 'relative',
@@ -90,10 +89,12 @@
 //       background: 'none',
 //       border: 'none',
 //       cursor: 'pointer',
+//       color: '#007bff',
+//       fontWeight: 'bold',
 //     },
 //     button: {
 //       width: '100%',
-//       padding: '10px',
+//       padding: '12px',
 //       fontSize: '16px',
 //       color: 'white',
 //       backgroundColor: '#007bff',
@@ -140,7 +141,8 @@
 //         fontSize: '18px',
 //       },
 //       button: {
-//         fontSize: '12px',
+//         fontSize: '14px',
+//         padding: '10px',
 //       },
 //     },
 //   };
@@ -215,8 +217,11 @@
 // };
 
 // export default RegisterPage;
+
+// RegisterPage.jsx
 import React, { useState } from 'react';
 import logo from '../Assets/logo-full.png';
+import { useDados } from '../Context/Dados';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -225,6 +230,7 @@ const RegisterPage = () => {
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
+  const { register, erro } = useDados(); // Usando o contexto
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -236,7 +242,7 @@ const RegisterPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Formulário enviado:', formData);
+    register(formData.username, formData.password);
   };
 
   const togglePasswordVisibility = () => {
@@ -252,7 +258,7 @@ const RegisterPage = () => {
       minHeight: '100vh',
       backgroundColor: 'white',
       padding: '20px',
-      fontFamily: "'Poppins', sans-serif", // Aplicando a fonte Poppins
+      fontFamily: "'Poppins', sans-serif",
     },
     form: {
       width: '100%',
@@ -324,44 +330,6 @@ const RegisterPage = () => {
       textAlign: 'center',
       fontSize: '14px',
     },
-    // Media queries para responsividade
-    '@media (max-width: 768px)': {
-      form: {
-        width: '90%',
-      },
-      inputGroup: {
-        width: '100%',
-        maxWidth: '300px',
-      },
-      logo: {
-        width: '150px',
-      },
-      title: {
-        fontSize: '20px',
-      },
-      button: {
-        fontSize: '14px',
-      },
-    },
-    '@media (max-width: 480px)': {
-      form: {
-        width: '90%',
-      },
-      inputGroup: {
-        width: '100%',
-        maxWidth: '250px',
-      },
-      logo: {
-        width: '120px',
-      },
-      title: {
-        fontSize: '18px',
-      },
-      button: {
-        fontSize: '14px',
-        padding: '10px',
-      },
-    },
   };
 
   return (
@@ -421,6 +389,8 @@ const RegisterPage = () => {
           </div>
         </div>
 
+        {erro && <p style={{ color: 'red', textAlign: 'center' }}>{erro}</p>}
+
         <button type="submit" style={styles.button}>
           Inscreva-me
         </button>
@@ -434,3 +404,4 @@ const RegisterPage = () => {
 };
 
 export default RegisterPage;
+
