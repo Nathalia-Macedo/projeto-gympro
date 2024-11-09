@@ -21,7 +21,7 @@ export const DadosProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await fetch('http://gympro.verkom.com.br:8080/login', {
+      const response = await fetch('https://gympro.verkom.com.br:8443/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ export const DadosProvider = ({ children }) => {
     try {
       console.log(username, password);
       
-      const response = await fetch('http://gympro.verkom.com.br:8080/register', {
+      const response = await fetch('https://gympro.verkom.com.br:8443/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ export const DadosProvider = ({ children }) => {
         },
         body: JSON.stringify({ username, password, role: 'USER' })
       });
-  
+      console.log(response)
       // Ignora o erro de CORS e valida apenas pelo status
       if (response.status === 200) {
         const data = await response.json();
