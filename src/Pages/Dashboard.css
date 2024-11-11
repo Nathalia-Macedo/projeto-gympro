@@ -1,0 +1,36 @@
+.dashboard {
+    padding: 2rem;
+    background-color: #f3f4f6;
+    min-height: 100vh;
+  }
+  
+  .dashboard-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #111827;
+    margin-bottom: 2rem;
+  }
+  
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .card-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  /* Responsive design */
+  @media (min-width: 640px) {
+    .card-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .card-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }

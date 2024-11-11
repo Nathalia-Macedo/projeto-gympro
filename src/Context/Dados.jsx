@@ -1,4 +1,3 @@
-// Dados.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const DadosContext = createContext();
@@ -10,14 +9,47 @@ export const useDados = () => {
 export const DadosProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
   const [erro, setErro] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  // Verificar no localStorage se o usuário está logado
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setUsuario({ token });
-    }
+    const fetchUserData = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await fetch('https://gympro.verkom.com.br:8443/user', {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Accept': 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            setUsuario({ ...userData, token });
+          } else {
+            localStorage.removeItem('token');
+            setUsuario(null);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+          setErro('Erro ao buscar dados do usuário');
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchUserData();
   }, []);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const isCorsError = (error) => {
+    return error.message.includes('CORS') || error.message.includes('Failed to fetch');
+  };
 
   const login = async (username, password) => {
     try {
@@ -27,69 +59,47 @@ export const DadosProvider = ({ children }) => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
+        credentials: 'include'
       });
 
-      const text = await response.text();
       if (!response.ok) {
         throw new Error(`Erro no login: ${response.status} - ${response.statusText}`);
       }
 
-      let data;
-      try {
-        data = JSON.parse(text);
-        console.log(data)
-      } catch (parseError) {
-        setErro('Erro ao processar resposta do servidor');
-        return;
-      }
+      const data = await response.json();
 
-      if (data) {
+      if (data && data.token) {
         localStorage.setItem('token', data.token);
-        setUsuario(data);
+        // Fetch user data after successful login
+        const userResponse = await fetch('https://gympro.verkom.com.br:8443/user', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${data.token}`,
+            'Accept': 'application/json',
+          },
+          credentials: 'include'
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUsuario({ ...userData, token: data.token });
+        } else {
+          throw new Error('Erro ao buscar dados do usuário após login');
+        }
+
         setErro(null);
       } else {
-        setErro('Resposta vazia do servidor');
+        setErro('Resposta inválida do servidor');
       }
     } catch (error) {
-      setErro(error.message.includes('Failed to fetch') ? 'Erro de conexão com o servidor' : error.message || 'Erro na requisição');
-    }
-  };
-
-  const register = async (username, password) => {
-    try {
-      console.log(username, password);
-      
-      const response = await fetch('https://gympro.verkom.com.br:8443/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ username, password, role: 'USER' })
-      });
-      console.log(response)
-      // Ignora o erro de CORS e valida apenas pelo status
-      if (response.status === 200) {
-        const data = await response.json();
-        setUsuario(data);
-        setErro(null);
-        localStorage.setItem('token', data.token);
-        console.log("Usuário registrado com sucesso!");
-      } else if (response.status === 403) {
-        setErro("Usuário já está cadastrado.");
-        console.log("Erro: Usuário já está cadastrado.");
+      if (isCorsError(error)) {
+        setErro('Erro de conexão com o servidor. Por favor, verifique se o CORS está configurado corretamente no backend.');
       } else {
-        // Outros erros genéricos
-        throw new Error(`Erro no registro: ${response.status} - ${response.statusText}`);
+        setErro(error.message || 'Erro na requisição');
       }
-  
-    } catch (error) {
-      // Trata erros de rede ou outros problemas com a requisição
-      setErro(error.message.includes('Failed to fetch') ? 'Erro de conexão com o servidor' : error.message || 'Erro na requisição');
     }
   };
-  
 
   const logout = () => {
     setUsuario(null);
@@ -97,7 +107,15 @@ export const DadosProvider = ({ children }) => {
   };
 
   return (
-    <DadosContext.Provider value={{ usuario, login, register, erro, logout }}>
+    <DadosContext.Provider value={{ 
+      usuario, 
+      login, 
+      erro, 
+      logout,
+      isSidebarOpen,
+      toggleSidebar,
+      loading
+    }}>
       {children}
     </DadosContext.Provider>
   );

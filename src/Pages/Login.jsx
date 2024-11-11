@@ -1,26 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { useDados } from '../Context/Dados'; // Importando o contexto
+import { useDados } from '../Context/Dados';
+import { useNavigate } from 'react-router-dom';
 import logo from '../Assets/logo-full.png';
 import './Login.css';
 
 function Login() {
-  const { login, erro } = useDados(); // Usando o contexto
+  const { login, erro, usuario } = useDados();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Usando useEffect para garantir que o erro seja exibido quando for alterado
+  useEffect(() => {
+    if (usuario) {
+      navigate('/dashboard');
+    }
+  }, [usuario, navigate]);
+
   useEffect(() => {
     if (erro) {
-      console.log('Erro:', erro); // Log para checar se o erro está sendo atualizado corretamente
+      console.log('Erro:', erro);
     }
-  }, [erro]); // Este useEffect será executado sempre que o estado 'erro' mudar
+  }, [erro]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true); // Ativando o estado de loading
-    await login(username, password); // Chamando a função de login do contexto
-    setLoading(false); // Desativando o loading
+    setLoading(true);
+    await login(username, password);
+    setLoading(false);
   };
 
   return (
@@ -51,7 +58,7 @@ function Login() {
             />
           </div>
 
-          {erro && <p style={{ color: 'red' }}>{erro}</p>} {/* Exibindo erro, se houver */}
+          {erro && <p style={{ color: 'red' }}>{erro}</p>}
 
           <div className="more">
             <div className="juntos">
@@ -59,7 +66,7 @@ function Login() {
                 <input type="checkbox" id="remember" />
                 <span className='little'>Lembrar minha preferência</span>
               </div>
-              <a href="">Esqueceu a Senha?</a>
+              <a href="/forgot-password">Esqueceu a Senha?</a>
             </div>
           </div>
 
@@ -69,7 +76,7 @@ function Login() {
             </button>
             <div className="cadastrar">
               <p>
-                Não tem uma conta? <a href="">Cadastre-se</a>
+                Não tem uma conta? <a href="/register">Cadastre-se</a>
               </p>
             </div>
           </div>
