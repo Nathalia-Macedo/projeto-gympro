@@ -131,6 +131,52 @@
     color: #64748b;
   }
   
+  /* Dark theme styles */
+  .header.dark {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    border-bottom-color: #2e2e2e;
+  }
+  
+  .header.dark .header-title {
+    color: #ffffff;
+  }
+  
+  .header.dark .sidebar-toggle {
+    background: #2e2e2e;
+    color: #6366f1;
+  }
+  
+  .header.dark .sidebar-toggle:hover {
+    background: #3e3e3e;
+  }
+  
+  .header.dark .search-input {
+    background: #2e2e2e;
+    color: #ffffff;
+  }
+  
+  .header.dark .search-input::placeholder {
+    color: #a0aec0;
+  }
+  
+  .header.dark .icon-button {
+    background: #2e2e2e;
+    color: #a0aec0;
+  }
+  
+  .header.dark .icon-button:hover {
+    background: #3e3e3e;
+  }
+  
+  .header.dark .user-name {
+    color: #ffffff;
+  }
+  
+  .header.dark .user-role {
+    color: #a0aec0;
+  }
+  
   /* Responsive Design */
   @media (min-width: 768px) {
     .user-info {

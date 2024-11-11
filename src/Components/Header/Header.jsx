@@ -1,13 +1,13 @@
 import React from 'react'
-import { ArrowRight, ArrowLeft, Search, Moon, Bell, MessageCircle, Gift } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Search, Moon, Sun, Bell, MessageCircle, Gift } from 'lucide-react'
 import { useDados } from '../../Context/Dados'
 import './Header.css'
 
 const Header = () => {
-  const { isSidebarOpen, toggleSidebar } = useDados();
+  const { isSidebarOpen, toggleSidebar, theme, toggleTheme } = useDados();
 
   return (
-    <header className="header">
+    <header className={`header ${theme}`}>
       <div className="header-left">
         <button className="sidebar-toggle" onClick={toggleSidebar}>
           {isSidebarOpen ? <ArrowLeft size={20} /> : <ArrowRight size={20} />}
@@ -25,8 +25,8 @@ const Header = () => {
       </div>
 
       <div className="header-right">
-        <button className="icon-button">
-          <Moon size={20} />
+        <button className="icon-button" onClick={toggleTheme}>
+          {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
         </button>
         
         <button className="icon-button">
