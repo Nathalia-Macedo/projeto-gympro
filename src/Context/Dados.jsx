@@ -10,45 +10,53 @@ export const DadosProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
   const [erro, setErro] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState('light');
+  const [cardData, setCardData] = useState([
+    {
+      title: 'Weekly Progress',
+      value: '42%',
+      type: 'progress',
+      progress: 42
+    },
+    {
+      title: 'Weekly Running',
+      value: '42km',
+      type: 'running',
+      progress: 75
+    },
+    {
+      title: 'Daily Cycling',
+      value: '230 Km',
+      type: 'cycling',
+      progress: 85
+    },
+    {
+      title: 'Morning Yoga',
+      value: '18:34:21',
+      type: 'yoga',
+      progress: 60
+    }
+  ]);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await fetch('https://gympro.verkom.com.br:8443/user', {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Accept': 'application/json',
-            },
-          });
-
-          if (response.ok) {
-            const userData = await response.json();
-            setUsuario({ ...userData, token });
-          } else {
-            localStorage.removeItem('token');
-            setUsuario(null);
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-          setErro('Erro ao buscar dados do usuário');
-        }
-      }
-      setLoading(false);
-    };
-
-    fetchUserData();
+    const token = localStorage.getItem('token');
+    if (token) {
+      setUsuario({ token });
+    }
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
   }, []);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const isCorsError = (error) => {
-    return error.message.includes('CORS') || error.message.includes('Failed to fetch');
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
   };
 
   const login = async (username, password) => {
@@ -59,45 +67,64 @@ export const DadosProvider = ({ children }) => {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({ username, password }),
-        credentials: 'include'
+        body: JSON.stringify({ username, password })
       });
 
+      const text = await response.text();
       if (!response.ok) {
         throw new Error(`Erro no login: ${response.status} - ${response.statusText}`);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = JSON.parse(text);
+        console.log(data)
+      } catch (parseError) {
+        setErro('Erro ao processar resposta do servidor');
+        return;
+      }
 
-      if (data && data.token) {
+      if (data) {
         localStorage.setItem('token', data.token);
-        // Fetch user data after successful login
-        const userResponse = await fetch('https://gympro.verkom.com.br:8443/user', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${data.token}`,
-            'Accept': 'application/json',
-          },
-          credentials: 'include'
-        });
-
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUsuario({ ...userData, token: data.token });
-        } else {
-          throw new Error('Erro ao buscar dados do usuário após login');
-        }
-
+        setUsuario(data);
         setErro(null);
       } else {
-        setErro('Resposta inválida do servidor');
+        setErro('Resposta vazia do servidor');
       }
     } catch (error) {
-      if (isCorsError(error)) {
-        setErro('Erro de conexão com o servidor. Por favor, verifique se o CORS está configurado corretamente no backend.');
+      setErro(error.message.includes('Failed to fetch') ? 'Erro de conexão com o servidor' : error.message || 'Erro na requisição');
+    }
+  };
+
+  const register = async (username, password) => {
+    try {
+      console.log(username, password);
+      
+      const response = await fetch('https://gympro.verkom.com.br:8443/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ username, password, role: 'USER' })
+      });
+      console.log(response)
+      
+      if (response.status === 200) {
+        const data = await response.json();
+        setUsuario(data);
+        setErro(null);
+        localStorage.setItem('token', data.token);
+        console.log("Usuário registrado com sucesso!");
+      } else if (response.status === 403) {
+        setErro("Usuário já está cadastrado.");
+        console.log("Erro: Usuário já está cadastrado.");
       } else {
-        setErro(error.message || 'Erro na requisição');
+        throw new Error(`Erro no registro: ${response.status} - ${response.statusText}`);
       }
+  
+    } catch (error) {
+      setErro(error.message.includes('Failed to fetch') ? 'Erro de conexão com o servidor' : error.message || 'Erro na requisição');
     }
   };
 
@@ -110,13 +137,18 @@ export const DadosProvider = ({ children }) => {
     <DadosContext.Provider value={{ 
       usuario, 
       login, 
+      register, 
       erro, 
       logout,
       isSidebarOpen,
       toggleSidebar,
-      loading
+      theme,
+      toggleTheme,
+      cardData
     }}>
       {children}
     </DadosContext.Provider>
   );
 };
+
+export default DadosProvider;

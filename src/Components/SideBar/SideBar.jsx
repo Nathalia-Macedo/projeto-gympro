@@ -12,50 +12,59 @@ import {
   Target,
   Briefcase,
   Settings,
-  ChevronDown
+  ChevronDown,
+  Sun,
+  Moon
 } from 'lucide-react'
 import './Sidebar.css'
 
-const menuItems = [
-  {
-    title: 'Dashboard',
-    icon: LayoutDashboard,
-    isOpen: true,
-    subItems: [
-      { title: 'Dashboard', path: '/dashboard' },
-      { title: 'Dashboard Dark', path: '/dashboard-dark', isNew: true },
-      { title: 'Workout Statistic', path: '/workout-statistic' },
-      { title: 'Workout Plan', path: '/workout-plan' },
-      { title: 'Distance Map', path: '/distance-map' },
-      { title: 'Diet Food Menu', path: '/diet-food' },
-      { title: 'Personal Record', path: '/personal-record' },
-    ]
-  },
-  {
-    title: 'Apps',
-    icon: Layout,
-    path: '/apps'
-  },
-  {
-    title: 'Icons',
-    icon: Target,
-    path: '/icons',
-    isNew: true
-  },
-  {
-    title: 'CMS',
-    icon: Briefcase,
-    path: '/cms',
-    isNew: true
-  }
-]
-
 const Sidebar = () => {
-  const { isSidebarOpen } = useDados();
+  const { isSidebarOpen, theme, toggleTheme } = useDados();
   const [activeMenu, setActiveMenu] = React.useState('Dashboard');
 
+  const menuItems = [
+    {
+      title: 'Dashboard',
+      icon: LayoutDashboard,
+      isOpen: true,
+      subItems: [
+        { title: 'Dashboard', path: '/dashboard', onClick: () => {} },
+        { 
+          title: 'Dashboard Dark', 
+          path: '/dashboard-dark', 
+          isNew: true, 
+          onClick: () => {
+            toggleTheme();
+          }
+        },
+        { title: 'Workout Statistic', path: '/workout-statistic', onClick: () => {} },
+        { title: 'Workout Plan', path: '/workout-plan', onClick: () => {} },
+        { title: 'Distance Map', path: '/distance-map', onClick: () => {} },
+        { title: 'Diet Food Menu', path: '/diet-food', onClick: () => {} },
+        { title: 'Personal Record', path: '/personal-record', onClick: () => {} },
+      ]
+    },
+    {
+      title: 'Apps',
+      icon: Layout,
+      path: '/apps'
+    },
+    {
+      title: 'Icons',
+      icon: Target,
+      path: '/icons',
+      isNew: true
+    },
+    {
+      title: 'CMS',
+      icon: Briefcase,
+      path: '/cms',
+      isNew: true
+    }
+  ];
+
   return (
-    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''}`}>
+    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${theme}`}>
       <div className="sidebar-header">
         <div className="logo">
           <Ruler size={32} className="logo-icon" />
@@ -83,6 +92,10 @@ const Sidebar = () => {
                     key={subItem.title} 
                     href={subItem.path}
                     className="subnav-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      subItem.onClick();
+                    }}
                   >
                     {subItem.title}
                     {subItem.isNew && <span className="badge-new">NEW</span>}
@@ -93,6 +106,13 @@ const Sidebar = () => {
           </div>
         ))}
       </nav>
+
+      <div className="theme-toggle">
+        <button onClick={toggleTheme} className="theme-toggle-button">
+          {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+        </button>
+      </div>
     </aside>
   )
 }

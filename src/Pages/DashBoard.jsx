@@ -4,6 +4,7 @@ import Card from '../Components/Card/Card'
 import Header from '../Components/Header/Header'
 import Sidebar from '../Components/SideBar/SideBar'
 import { useDados } from '../Context/Dados'
+
 const DashboardContainer = styled.div`
   display: flex;
 `
@@ -32,34 +33,7 @@ const DashboardGrid = styled.div`
 `
 
 const Dashboard = () => {
-  const { isSidebarOpen } = useDados();
-
-  const cards = [
-    {
-      title: 'Weekly Progress',
-      value: '42%',
-      type: 'progress',
-      progress: 42
-    },
-    {
-      title: 'Weekly Running',
-      value: '42km',
-      type: 'running',
-      progress: 75
-    },
-    {
-      title: 'Daily Cycling',
-      value: '230 Km',
-      type: 'cycling',
-      progress: 85
-    },
-    {
-      title: 'Morning Yoga',
-      value: '18:34:21',
-      type: 'yoga',
-      progress: 60
-    }
-  ]
+  const { isSidebarOpen, cardData } = useDados();
 
   return (
     <DashboardContainer>
@@ -67,7 +41,7 @@ const Dashboard = () => {
       <MainContent sidebarOpen={isSidebarOpen}>
         <Header />
         <DashboardGrid>
-          {cards.map((card) => (
+          {cardData.map((card) => (
             <Card
               key={card.title}
               title={card.title}
