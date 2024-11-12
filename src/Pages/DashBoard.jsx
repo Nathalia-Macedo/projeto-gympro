@@ -27,10 +27,12 @@ const DashboardContainer = styled.div`
 const MainContent = styled.main`
   flex: 1;
   transition: margin-left 0.3s ease;
-  margin-left: ${props => props.sidebarOpen ? '280px' : '0'};
+  margin-left: ${props => props.sidebarOpen ? '280px' : '80px'};
+  padding-left: 10px; // Adiciona espaço para o cabeçalho
 
   @media (max-width: 768px) {
     margin-left: 0;
+    padding-left: 60px;
   }
 `
 
@@ -38,6 +40,7 @@ const DashboardGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
+  padding-left: 32px; // Adiciona espaço à esquerda para evitar sobreposição
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
@@ -69,6 +72,7 @@ const Dashboard = () => {
             ))}
           </DashboardGrid>
         </MainContent>
+       
       </DashboardContainer>
     </ThemeProvider>
   )

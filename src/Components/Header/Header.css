@@ -5,6 +5,8 @@
     padding: 1rem 2rem;
     background: white;
     border-bottom: 1px solid #f1f5f9;
+    z-index: 1000;
+    position: relative;
   }
   
   .header-left {
@@ -25,6 +27,8 @@
     cursor: pointer;
     color: #3b82f6;
     transition: background-color 0.2s;
+    position: relative;
+    z-index: 1001;
   }
   
   .sidebar-toggle:hover {

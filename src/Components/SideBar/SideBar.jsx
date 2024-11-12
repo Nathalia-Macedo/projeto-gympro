@@ -3,11 +3,11 @@ import { useDados } from '../../Context/Dados'
 import { 
   Ruler, 
   LayoutDashboard, 
-  MonitorPlay, 
-  Activity, 
-  Map, 
-  Utensils, 
-  Trophy,
+  Monitor, 
+  BarChart2, 
+  MapPin, 
+  Apple, 
+  Award,
   Layout,
   Target,
   Briefcase,
@@ -27,27 +27,30 @@ const Sidebar = () => {
       title: 'Dashboard',
       icon: LayoutDashboard,
       isOpen: true,
+      color: '#6366f1',
       subItems: [
-        { title: 'Dashboard', path: '/dashboard', onClick: () => {} },
+        { title: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, onClick: () => {} },
         { 
           title: 'Dashboard Dark', 
           path: '/dashboard-dark', 
+          icon: Moon,
           isNew: true, 
           onClick: () => {
             toggleTheme();
           }
         },
-        { title: 'Workout Statistic', path: '/workout-statistic', onClick: () => {} },
-        { title: 'Workout Plan', path: '/workout-plan', onClick: () => {} },
-        { title: 'Distance Map', path: '/distance-map', onClick: () => {} },
-        { title: 'Diet Food Menu', path: '/diet-food', onClick: () => {} },
-        { title: 'Personal Record', path: '/personal-record', onClick: () => {} },
+        { title: 'Workout Statistic', path: '/workout-statistic', icon: BarChart2, onClick: () => {} },
+        { title: 'Workout Plan', path: '/workout-plan', icon: Target, onClick: () => {} },
+        { title: 'Distance Map', path: '/distance-map', icon: MapPin, onClick: () => {} },
+        { title: 'Diet Food Menu', path: '/diet-food', icon: Apple, onClick: () => {} },
+        { title: 'Personal Record', path: '/personal-record', icon: Award, onClick: () => {} },
       ]
     },
     {
       title: 'Apps',
       icon: Layout,
-      path: '/apps'
+      path: '/apps',
+      color: '#818cf8'
     },
     {
       title: 'Icons',
@@ -60,15 +63,19 @@ const Sidebar = () => {
       icon: Briefcase,
       path: '/cms',
       isNew: true
+    },
+    {
+      title: 'Settings',
+      icon: Settings,
+      path: '/settings'
     }
   ];
 
   return (
-    <aside className={`sidebar ${isSidebarOpen ? 'open' : ''} ${theme}`}>
+    <aside className={`sidebar ${isSidebarOpen ? 'open' : 'collapsed'} ${theme}`}>
       <div className="sidebar-header">
         <div className="logo">
           <Ruler size={32} className="logo-icon" />
-          <span className="logo-text">Gymove.</span>
         </div>
       </div>
 
@@ -79,7 +86,11 @@ const Sidebar = () => {
               className={`nav-link ${activeMenu === item.title ? 'active' : ''}`}
               onClick={() => item.subItems && setActiveMenu(activeMenu === item.title ? '' : item.title)}
             >
-              <item.icon size={20} className="nav-icon" />
+              <item.icon 
+                size={20} 
+                className="nav-icon"
+                style={{ color: item.color }} 
+              />
               <span className="nav-text">{item.title}</span>
               {item.isNew && <span className="badge-new">NEW</span>}
               {item.subItems && <ChevronDown className={`arrow-icon ${activeMenu === item.title ? 'open' : ''}`} />}
@@ -97,7 +108,8 @@ const Sidebar = () => {
                       subItem.onClick();
                     }}
                   >
-                    {subItem.title}
+                    {subItem.icon && <subItem.icon size={16} className="subnav-icon" />}
+                    <span>{subItem.title}</span>
                     {subItem.isNew && <span className="badge-new">NEW</span>}
                   </a>
                 ))}

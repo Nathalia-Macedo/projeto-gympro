@@ -2,15 +2,11 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const DadosContext = createContext();
 
-export const useDados = () => {
-  return useContext(DadosContext);
-};
-
-export const DadosProvider = ({ children }) => {
-  const [usuario, setUsuario] = useState(null);
-  const [erro, setErro] = useState(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+export function DadosProvider({ children }) {
   const [theme, setTheme] = useState('light');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [usuario, setUsuario] = useState(null);
+  const [erro,setErro] = useState("")
   const [cardData, setCardData] = useState([
     {
       title: 'Weekly Progress',
@@ -37,26 +33,19 @@ export const DadosProvider = ({ children }) => {
       progress: 60
     }
   ]);
+  const [planos, setPlanos] = useState([]);
+  const [cargos, setCargos] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setUsuario({ token });
-    }
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-    }
+    fetchCargos();
   }, []);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
   };
 
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(prevState => !prevState);
   };
 
   const login = async (username, password) => {
@@ -96,59 +85,45 @@ export const DadosProvider = ({ children }) => {
     }
   };
 
-  const register = async (username, password) => {
-    try {
-      console.log(username, password);
-      
-      const response = await fetch('https://gympro.verkom.com.br:8443/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify({ username, password, role: 'USER' })
-      });
-      console.log(response)
-      
-      if (response.status === 200) {
-        const data = await response.json();
-        setUsuario(data);
-        setErro(null);
-        localStorage.setItem('token', data.token);
-        console.log("Usuário registrado com sucesso!");
-      } else if (response.status === 403) {
-        setErro("Usuário já está cadastrado.");
-        console.log("Erro: Usuário já está cadastrado.");
-      } else {
-        throw new Error(`Erro no registro: ${response.status} - ${response.statusText}`);
-      }
   
+
+  
+  const fetchCargos = async () => {
+    try {
+      const response = await fetch('https://gympro.verkom.com.br:8443/cargos');
+      if (!response.ok) {
+        throw new Error('Failed to fetch cargos data');
+      }
+      const data = await response.json();
+      setCargos(data);
     } catch (error) {
-      setErro(error.message.includes('Failed to fetch') ? 'Erro de conexão com o servidor' : error.message || 'Erro na requisição');
+      console.error('Error fetching cargos data:', error);
     }
   };
 
-  const logout = () => {
-    setUsuario(null);
-    localStorage.removeItem('token');
-  };
-
   return (
-    <DadosContext.Provider value={{ 
-      usuario, 
-      login, 
-      register, 
-      erro, 
-      logout,
-      isSidebarOpen,
-      toggleSidebar,
-      theme,
-      toggleTheme,
-      cardData
-    }}>
+    <DadosContext.Provider
+      value={{
+        theme,
+        toggleTheme,
+        isSidebarOpen,
+        toggleSidebar,
+        usuario,
+        cardData,
+        login,
+        cargos,
+        fetchCargos,
+      }}
+    >
       {children}
     </DadosContext.Provider>
   );
-};
+}
 
-export default DadosProvider;
+export function useDados() {
+  const context = useContext(DadosContext);
+  if (!context) {
+    throw new Error('useDados must be used within a DadosProvider');
+  }
+  return context;
+}
