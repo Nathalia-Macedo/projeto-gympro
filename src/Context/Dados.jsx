@@ -4,7 +4,7 @@ const DadosContext = createContext();
 
 export function DadosProvider({ children }) {
   const [theme, setTheme] = useState('light');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [usuario, setUsuario] = useState(null);
   const [erro,setErro] = useState("")
   const [cardData, setCardData] = useState([
